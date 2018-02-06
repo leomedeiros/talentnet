@@ -1,0 +1,39 @@
+# To get started with security, check out the documentation:
+# https://symfony.com/doc/current/security.html
+security:
+
+    # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    providers:
+        in_memory:
+            memory: ~
+
+        api_key_user_provider:
+            id: AppBundle\Security\ApiKeyUserProvider
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+            
+        main:
+            pattern: /admin
+            stateless: true
+            methods: [POST, PUT, DELETE]
+            simple_preauth:
+                authenticator: AppBundle\Security\ApiKeyAuthenticator
+            provider: api_key_user_provider
+
+        public:
+            methods: [GET]
+            security: false
+
+
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+
+    encoders:
+        Symfony\Component\Security\Core\User\User: sha512
+        AppBundle\Entity\User:
+            algorithm:           sha512
+            encode_as_base64:    true
+            iterations:          5000        
